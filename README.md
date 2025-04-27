@@ -1,7 +1,31 @@
 # ewhere
+
 ewhere (easy where) is a Go package for dynamically parsing SQL where query with ?field placeholders.
 
-Automatically builds and cleans WHERE clauses based on parameter map input. Fast, flexible, and clean..
+Automatically builds and cleans WHERE clauses based on parameter map input. Fast, flexible, and clean.
+
+## 🎯 How It Works
+
+- Write your SQL template using `?field` placeholders
+- Call `ewhere.Parse(queryTemplate, params)`
+- **If a param is missing, nil, or empty, the field will be automatically removed from the final query**
+- Clean and safe output without leaving broken SQL or leftover conditions
+
+Example:
+
+```go
+queryTemplate := "SELECT * FROM users WHERE ?name AND ?age"
+
+params := map[string]interface{}{
+	"name": "",
+	"age":  30,
+}
+
+query, args := ewhere.Parse(queryTemplate, params)
+
+fmt.Println("Query:", query)    //? Query: SELECT * FROM users WHERE age = ?
+fmt.Println("Args:", args)      //? Args: [30]
+```
 
 ## 📦 Install ewhere
 
@@ -30,29 +54,4 @@ BenchmarkParse-12
   469850              2550 ns/op            2630 B/op         37 allocs/op
 PASS
 ok      ewhere/ehwere   1.391s
-```
-
-## 🚀 Example Usage
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/AldiRvn/ewhere"
-)
-
-func main() {
-	queryTemplate := "SELECT * FROM users WHERE ?name AND ?age"
-
-	params := map[string]interface{}{
-		"name": "Jane",
-		"age":  25,
-	}
-
-	query, args := ewhere.Parse(queryTemplate, params)
-
-	fmt.Println("Query:", query)  // Query: SELECT * FROM users WHERE name = ? AND age = ?
-	fmt.Println("Args:", args)    // Args: [Jane 25]
-}
 ```
