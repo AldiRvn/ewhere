@@ -1,7 +1,8 @@
 # ewhere
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/AldiRvn/ewhere)](https://goreportcard.com/report/github.com/AldiRvn/ewhere)
 [![Go Reference](https://pkg.go.dev/badge/github.com/AldiRvn/ewhere.svg)](https://pkg.go.dev/github.com/AldiRvn/ewhere)
+[![Go Report Card](https://goreportcard.com/badge/github.com/AldiRvn/ewhere)](https://goreportcard.com/report/github.com/AldiRvn/ewhere)
+[![Coverage Status](https://coveralls.io/repos/github/AldiRvn/ewhere/badge.svg?branch=master)](https://coveralls.io/github/AldiRvn/ewhere?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ewhere (easy where) is a Go package for dynamically parsing SQL where query with `?field` placeholders.
