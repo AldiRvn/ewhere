@@ -5,6 +5,25 @@ import (
 	"strings"
 )
 
+// Parse replaces dynamic placeholders in SQL with real fields and arguments.
+//
+// Example:
+//   Input Query: "SELECT * FROM users WHERE ?name AND ?age"
+//   Input Params: map[string]interface{}{"name": "Jane", "age": 25}
+//
+//   Output Query: "SELECT * FROM users WHERE name = ? AND age = ?"
+//   Output Args:  ["Jane", 25]
+//
+// Rules:
+// - Placeholder format is `?field`.
+// - If the param value is nil or empty (""), it will be ignored (replaced by "1=1").
+// - Cleanup is applied to remove unnecessary "1=1" from the query.
+//
+// Special Notes:
+// - Handles multi-line queries safely.
+// - Cleans up leftover "AND 1=1", "OR 1=1", and "(1=1)".
+//
+// This function is designed to support dynamic SQL generation safely.
 func Parse(query string, params map[string]interface{}) (string, []interface{}) {
 	re := regexp.MustCompile(`\?(\w+)`)
 	matches := re.FindAllStringSubmatch(query, -1)
@@ -17,19 +36,19 @@ func Parse(query string, params map[string]interface{}) (string, []interface{}) 
 
 		val, ok := params[field]
 		if !ok || val == nil || val == "" {
-			// Kalau kosong, replace ke '__PLACEHOLDER__' (yang nantinya jadi '1=1')
+			// If missing or empty, temporarily replace with '__PLACEHOLDER__'
 			query = strings.Replace(query, fullPlaceholder, "__PLACEHOLDER__", 1)
 		} else {
-			// Kalau ada, ganti jadi field = ?
+			// If present, replace with 'field = ?'
 			query = strings.Replace(query, fullPlaceholder, field+" = ?", 1)
 			args = append(args, val)
 		}
 	}
 
-	// Replace "__PLACEHOLDER__" jadi "1=1" setelah semua parsing
+	// After parsing, replace all '__PLACEHOLDER__' with '1=1'
 	query = strings.ReplaceAll(query, "__PLACEHOLDER__", "1=1")
 
-	// Cleanup biasa
+	// Cleanup unnecessary '1=1' fragments
 	query = strings.ReplaceAll(query, "WHERE 1=1 AND ", "WHERE ")
 	query = strings.ReplaceAll(query, "WHERE 1=1 OR ", "WHERE ")
 	query = strings.ReplaceAll(query, "AND 1=1", "")

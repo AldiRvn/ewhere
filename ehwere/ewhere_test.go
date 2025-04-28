@@ -2,6 +2,7 @@ package ewhere
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -37,7 +38,7 @@ func Test_ewhere(t *testing.T) {
 			name:      "Semua kosong",
 			query:     "SELECT * FROM users WHERE ?name AND ?age",
 			params:    map[string]interface{}{},
-			wantQuery: "SELECT * FROM users WHERE 1=1", // ✅ now expect 1=1
+			wantQuery: "SELECT * FROM users WHERE 1=1",
 			wantArgs:  []interface{}{},
 		},
 		{
@@ -49,17 +50,71 @@ func Test_ewhere(t *testing.T) {
 			wantQuery: "SELECT * FROM users WHERE name = 'Jane' AND age = ?",
 			wantArgs:  []interface{}{25},
 		},
+		{
+			name: "Multi-line query",
+			query: `
+SELECT id, name
+FROM users
+WHERE ?name
+  AND (?age OR ?city)
+`,
+			params: map[string]interface{}{
+				"name": "Jane",
+				"age":  25,
+				"city": "New York",
+			},
+			wantQuery: `
+SELECT id, name
+FROM users
+WHERE name = ?
+  AND (age = ? OR city = ?)
+`,
+			wantArgs: []interface{}{"Jane", 25, "New York"},
+		},
+		{
+			name: "Nested SELECT",
+			query: `
+SELECT *
+FROM (
+    SELECT id, ?name
+    FROM employees
+) AS sub
+WHERE ?department
+`,
+			params: map[string]interface{}{
+				"name":       "full_name",
+				"department": "IT",
+			},
+			wantQuery: `
+SELECT *
+FROM (
+    SELECT id, name = ?
+    FROM employees
+) AS sub
+WHERE department = ?
+`,
+			wantArgs: []interface{}{"full_name", "IT"},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotQuery, gotArgs := Parse(tt.query, tt.params)
-			if gotQuery != tt.wantQuery {
-				t.Errorf("got query = %v, want %v", gotQuery, tt.wantQuery)
+
+			gotQueryNorm := normalize(gotQuery)
+			wantQueryNorm := normalize(tt.wantQuery)
+
+			if gotQueryNorm != wantQueryNorm {
+				t.Errorf("got query = %v, want %v", gotQueryNorm, wantQueryNorm)
 			}
+
 			if !reflect.DeepEqual(gotArgs, tt.wantArgs) {
 				t.Errorf("got args = %v, want %v", gotArgs, tt.wantArgs)
 			}
 		})
 	}
+}
+
+func normalize(s string) string {
+	return strings.TrimSpace(s)
 }
