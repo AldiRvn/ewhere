@@ -95,6 +95,17 @@ WHERE department = ?
 `,
 			wantArgs: []interface{}{"full_name", "IT"},
 		},
+		{
+			name:  "Field dengan titik",
+			query: "SELECT * FROM products WHERE ?pr.code AND ?pr.category",
+			params: map[string]interface{}{
+				"pr.code":         "P001",
+				"pr.category":     "Gadget",
+				"testParamsLebih": "Banyak",
+			},
+			wantQuery: "SELECT * FROM products WHERE pr.code = ? AND pr.category = ?",
+			wantArgs:  []interface{}{"P001", "Gadget"},
+		},
 	}
 
 	for _, tt := range tests {

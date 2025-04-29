@@ -8,11 +8,12 @@ import (
 // Parse replaces dynamic placeholders in SQL with real fields and arguments.
 //
 // Example:
-//   Input Query: "SELECT * FROM users WHERE ?name AND ?age"
-//   Input Params: map[string]interface{}{"name": "Jane", "age": 25}
 //
-//   Output Query: "SELECT * FROM users WHERE name = ? AND age = ?"
-//   Output Args:  ["Jane", 25]
+//	Input Query: "SELECT * FROM users WHERE ?name AND ?age"
+//	Input Params: map[string]interface{}{"name": "Jane", "age": 25}
+//
+//	Output Query: "SELECT * FROM users WHERE name = ? AND age = ?"
+//	Output Args:  ["Jane", 25]
 //
 // Rules:
 // - Placeholder format is `?field`.
@@ -25,7 +26,7 @@ import (
 //
 // This function is designed to support dynamic SQL generation safely.
 func Parse(query string, params map[string]interface{}) (string, []interface{}) {
-	re := regexp.MustCompile(`\?(\w+)`)
+	re := regexp.MustCompile(`\?([\w\.]+)`)
 	matches := re.FindAllStringSubmatch(query, -1)
 
 	args := []interface{}{}
