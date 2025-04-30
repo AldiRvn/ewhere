@@ -76,24 +76,24 @@ WHERE name = ?
 			query: `
 SELECT *
 FROM (
-    SELECT id, ?name
-    FROM employees
+    SELECT id
+    FROM employees WHERE ?name
 ) AS sub
 WHERE ?department
 `,
 			params: map[string]interface{}{
-				"name":       "full_name",
-				"department": "IT",
+				"name":       "Jane",
+				"department": "Model",
 			},
 			wantQuery: `
 SELECT *
 FROM (
-    SELECT id, name = ?
-    FROM employees
+    SELECT id
+    FROM employees WHERE name = ?
 ) AS sub
 WHERE department = ?
 `,
-			wantArgs: []interface{}{"full_name", "IT"},
+			wantArgs: []interface{}{"Jane", "Model"},
 		},
 		{
 			name:  "Field dengan titik",
