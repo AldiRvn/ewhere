@@ -50,14 +50,12 @@ go get github.com/AldiRvn/ewhere
 ## 🧪 Benchmark Result
 
 ```bash
-goos: windows
+goos: linux
 goarch: amd64
-pkg: ewhere/ehwere
-cpu: 12th Gen Intel(R) Core(TM) i5-12400F
-=== RUN   BenchmarkParse
+pkg: github.com/AldiRvn/ewhere
+cpu: 11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz
 BenchmarkParse
-BenchmarkParse-12
-  469850              2550 ns/op            2630 B/op         37 allocs/op
+BenchmarkParse-8          285344              3845 ns/op            2733 B/op         41 allocs/op
 PASS
-ok      ewhere/ehwere   1.391s
+ok      github.com/AldiRvn/ewhere       2.149s
 ```
