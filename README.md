@@ -22,7 +22,7 @@ Example:
 ```go
 queryTemplate := "SELECT * FROM users WHERE ?name AND ?age"
 
-params := map[string]interface{}{
+params := map[string]any{
 	"name": "",
 	"age":  30,
 }
