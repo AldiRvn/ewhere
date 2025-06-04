@@ -106,6 +106,16 @@ WHERE department = ?
 			wantQuery: "SELECT * FROM products WHERE pr.code = ? AND pr.category = ?",
 			wantArgs:  []interface{}{"P001", "Gadget"},
 		},
+		{
+			name:  "Placeholder first in parentheses",
+			query: "SELECT * FROM users WHERE (?name AND ?age)",
+			params: map[string]interface{}{
+				"name": "",
+				"age":  30,
+			},
+			wantQuery: "SELECT * FROM users WHERE (age = ?)",
+			wantArgs:  []interface{}{30},
+		},
 	}
 
 	for _, tt := range tests {

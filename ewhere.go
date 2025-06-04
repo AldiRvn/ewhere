@@ -54,6 +54,8 @@ func Parse(query string, params map[string]any) (string, []any) {
 	query = strings.ReplaceAll(query, "WHERE 1=1 OR ", "WHERE ")
 	query = strings.ReplaceAll(query, "AND 1=1", "")
 	query = strings.ReplaceAll(query, "OR 1=1", "")
+	query = strings.ReplaceAll(query, "1=1 AND ", "")
+	query = strings.ReplaceAll(query, "1=1 OR ", "")
 	query = strings.ReplaceAll(query, "(1=1)", "")
 
 	return strings.TrimSpace(query), args
