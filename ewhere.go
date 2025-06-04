@@ -36,11 +36,41 @@ func Parse(query string, params map[string]any) (string, []any) {
 		field := match[1]
 
 		val, ok := params[field]
-		if !ok || val == nil || val == "" {
+		if !ok || val == nil {
 			// If missing or empty, temporarily replace with '__PLACEHOLDER__'
 			query = strings.Replace(query, fullPlaceholder, "__PLACEHOLDER__", 1)
-		} else {
-			// If present, replace with 'field = ?'
+			continue
+		}
+
+		switch v := val.(type) {
+		case []string:
+			if len(v) == 0 {
+				query = strings.Replace(query, fullPlaceholder, "__PLACEHOLDER__", 1)
+				continue
+			}
+			placeholders := strings.TrimSuffix(strings.Repeat("?,", len(v)), ",")
+			query = strings.Replace(query, fullPlaceholder, field+" IN ("+placeholders+")", 1)
+			for _, s := range v {
+				args = append(args, s)
+			}
+		case []int:
+			if len(v) == 0 {
+				query = strings.Replace(query, fullPlaceholder, "__PLACEHOLDER__", 1)
+				continue
+			}
+			placeholders := strings.TrimSuffix(strings.Repeat("?,", len(v)), ",")
+			query = strings.Replace(query, fullPlaceholder, field+" IN ("+placeholders+")", 1)
+			for _, n := range v {
+				args = append(args, n)
+			}
+		case string:
+			if v == "" {
+				query = strings.Replace(query, fullPlaceholder, "__PLACEHOLDER__", 1)
+			} else {
+				query = strings.Replace(query, fullPlaceholder, field+" = ?", 1)
+				args = append(args, v)
+			}
+		default:
 			query = strings.Replace(query, fullPlaceholder, field+" = ?", 1)
 			args = append(args, val)
 		}

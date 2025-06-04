@@ -116,6 +116,42 @@ WHERE department = ?
 			wantQuery: "SELECT * FROM users WHERE (age = ?)",
 			wantArgs:  []interface{}{30},
 		},
+		{
+			name:  "Slice string",
+			query: "SELECT * FROM users WHERE ?ids",
+			params: map[string]interface{}{
+				"ids": []string{"A", "B", "C"},
+			},
+			wantQuery: "SELECT * FROM users WHERE ids IN (?,?,?)",
+			wantArgs:  []interface{}{"A", "B", "C"},
+		},
+		{
+			name:  "Slice int",
+			query: "SELECT * FROM users WHERE ?ids",
+			params: map[string]interface{}{
+				"ids": []int{1, 2, 3},
+			},
+			wantQuery: "SELECT * FROM users WHERE ids IN (?,?,?)",
+			wantArgs:  []interface{}{1, 2, 3},
+		},
+		{
+			name:  "Slice string empty",
+			query: "SELECT * FROM users WHERE ?ids",
+			params: map[string]interface{}{
+				"ids": []string{},
+			},
+			wantQuery: "SELECT * FROM users WHERE 1=1",
+			wantArgs:  []interface{}{},
+		},
+		{
+			name:  "Slice int empty",
+			query: "SELECT * FROM users WHERE ?ids",
+			params: map[string]interface{}{
+				"ids": []int{},
+			},
+			wantQuery: "SELECT * FROM users WHERE 1=1",
+			wantArgs:  []interface{}{},
+		},
 	}
 
 	for _, tt := range tests {
