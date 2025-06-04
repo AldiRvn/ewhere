@@ -3,6 +3,7 @@
 ## Formatting
 
 - Run `gofmt -w` on all changed `.go` files before committing.
+- Use `any` instead `interface{}`.
 
 ## Testing
 
