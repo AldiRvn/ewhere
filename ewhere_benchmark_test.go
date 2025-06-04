@@ -6,7 +6,7 @@ import (
 
 func BenchmarkParse(b *testing.B) {
 	query := "SELECT * FROM users WHERE ?name AND ?age AND ?email AND ?country"
-	params := map[string]interface{}{
+	params := map[string]any{
 		"name":    "Jane",
 		"age":     25,
 		"email":   "jane@example.com",
