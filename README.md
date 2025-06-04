@@ -22,7 +22,7 @@ Example:
 ```go
 queryTemplate := "SELECT * FROM users WHERE ?name AND ?age"
 
-params := map[string]interface{}{
+params := map[string]any{
 	"name": "",
 	"age":  30,
 }
@@ -41,11 +41,11 @@ go get github.com/AldiRvn/ewhere
 
 ## ✨ Benchmark Summary
 
-- ⏱️ Avg time per parse: **2550 ns** (~2.5 μs)
-- 💾 Avg memory usage: **2630 bytes**
-- 🔁 Avg allocations: **37 per operation**
-- 🖥️ CPU: 12th Gen Intel(R) Core(TM) i5-12400F
-- 📋 Benchmark runs: **469,850 iterations**
+- ⏱️ Avg time per parse: **3845 ns** (~3.8 μs)
+- 💾 Avg memory usage: **2733 bytes**
+- 🔁 Avg allocations: **41 per operation**
+- 🖥️ CPU: 11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz
+- 📋 Benchmark runs: **285,344 iterations**
 
 ## 🧪 Benchmark Result
 
