@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+var placeholderRE = regexp.MustCompile(`\?([\w\.]+)`)
+
 // Parse replaces dynamic placeholders in SQL with real fields and arguments.
 //
 // Example:
@@ -26,8 +28,7 @@ import (
 //
 // This function is designed to support dynamic SQL generation safely.
 func Parse(query string, params map[string]any) (string, []any) {
-	re := regexp.MustCompile(`\?([\w\.]+)`)
-	matches := re.FindAllStringSubmatch(query, -1)
+	matches := placeholderRE.FindAllStringSubmatch(query, -1)
 
 	args := []any{}
 
