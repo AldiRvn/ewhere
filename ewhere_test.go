@@ -152,6 +152,13 @@ WHERE department = ?
 			wantQuery: "SELECT * FROM users WHERE 1=1",
 			wantArgs:  []any{},
 		},
+		{
+			name:      "Repeated placeholder",
+			query:     "SELECT * FROM users WHERE ?name OR ?name",
+			params:    map[string]any{"name": "Jane"},
+			wantQuery: "SELECT * FROM users WHERE name = ? OR name = ?",
+			wantArgs:  []any{"Jane", "Jane"},
+		},
 	}
 
 	for _, tt := range tests {

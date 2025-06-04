@@ -41,11 +41,11 @@ go get github.com/AldiRvn/ewhere
 
 ## ✨ Benchmark Summary
 
-- ⏱️ Avg time per parse: **3845 ns** (~3.8 μs)
-- 💾 Avg memory usage: **2733 bytes**
-- 🔁 Avg allocations: **41 per operation**
-- 🖥️ CPU: 11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz
-- 📋 Benchmark runs: **285,344 iterations**
+- ⏱️ Avg time per parse: **2618 ns** (~2.6 μs)
+- 💾 Avg memory usage: **981 bytes**
+- 🔁 Avg allocations: **19 per operation**
+- 🖥️ CPU: Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz
+- 📋 Benchmark runs: **515,733 iterations**
 
 ## 🧪 Benchmark Result
 
@@ -53,9 +53,9 @@ go get github.com/AldiRvn/ewhere
 goos: linux
 goarch: amd64
 pkg: github.com/AldiRvn/ewhere
-cpu: 11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz
+cpu: Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz
 BenchmarkParse
-BenchmarkParse-8          285344              3845 ns/op            2733 B/op         41 allocs/op
+BenchmarkParse-5          515733              2618 ns/op             981 B/op         19 allocs/op
 PASS
-ok      github.com/AldiRvn/ewhere       2.149s
+ok      github.com/AldiRvn/ewhere       1.382s
 ```

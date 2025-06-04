@@ -28,8 +28,7 @@ var placeholderRE = regexp.MustCompile(`\?([\w\.]+)`)
 //
 // This function is designed to support dynamic SQL generation safely.
 func Parse(query string, params map[string]any) (string, []any) {
-	re := placeholderRE
-	matches := re.FindAllStringSubmatch(query, -1)
+	matches := placeholderRE.FindAllStringSubmatch(query, -1)
 
 	args := []any{}
 
