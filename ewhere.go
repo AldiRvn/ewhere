@@ -1,11 +1,27 @@
 package ewhere
 
 import (
+	"reflect"
 	"regexp"
 	"strings"
 )
 
 var placeholderRE = regexp.MustCompile(`\?([\w\.]+)`)
+
+// handleSlice builds an IN clause for a slice and appends the slice values
+// to args. It returns the updated query string.
+func handleSlice[T any](query, placeholder, field string, slice []T, args *[]any) string {
+	if len(slice) == 0 {
+		return strings.Replace(query, placeholder, "__PLACEHOLDER__", 1)
+	}
+
+	placeholders := strings.TrimSuffix(strings.Repeat("?,", len(slice)), ",")
+	for _, v := range slice {
+		*args = append(*args, v)
+	}
+
+	return strings.Replace(query, placeholder, field+" IN ("+placeholders+")", 1)
+}
 
 // Parse replaces dynamic placeholders in SQL with real fields and arguments.
 //
@@ -45,26 +61,6 @@ func Parse(query string, params map[string]any) (string, []any) {
 		}
 
 		switch v := val.(type) {
-		case []string:
-			if len(v) == 0 {
-				query = strings.Replace(query, fullPlaceholder, "__PLACEHOLDER__", 1)
-				continue
-			}
-			placeholders := strings.TrimSuffix(strings.Repeat("?,", len(v)), ",")
-			query = strings.Replace(query, fullPlaceholder, field+" IN ("+placeholders+")", 1)
-			for _, s := range v {
-				args = append(args, s)
-			}
-		case []int:
-			if len(v) == 0 {
-				query = strings.Replace(query, fullPlaceholder, "__PLACEHOLDER__", 1)
-				continue
-			}
-			placeholders := strings.TrimSuffix(strings.Repeat("?,", len(v)), ",")
-			query = strings.Replace(query, fullPlaceholder, field+" IN ("+placeholders+")", 1)
-			for _, n := range v {
-				args = append(args, n)
-			}
 		case string:
 			if v == "" {
 				query = strings.Replace(query, fullPlaceholder, "__PLACEHOLDER__", 1)
@@ -73,8 +69,17 @@ func Parse(query string, params map[string]any) (string, []any) {
 				args = append(args, v)
 			}
 		default:
-			query = strings.Replace(query, fullPlaceholder, field+" = ?", 1)
-			args = append(args, val)
+			rv := reflect.ValueOf(val)
+			if rv.Kind() == reflect.Slice {
+				slice := make([]any, rv.Len())
+				for i := 0; i < rv.Len(); i++ {
+					slice[i] = rv.Index(i).Interface()
+				}
+				query = handleSlice(query, fullPlaceholder, field, slice, &args)
+			} else {
+				query = strings.Replace(query, fullPlaceholder, field+" = ?", 1)
+				args = append(args, val)
+			}
 		}
 	}
 

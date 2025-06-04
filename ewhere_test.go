@@ -135,6 +135,15 @@ WHERE department = ?
 			wantArgs:  []any{1, 2, 3},
 		},
 		{
+			name:  "Slice any",
+			query: "SELECT * FROM users WHERE ?ids",
+			params: map[string]any{
+				"ids": []any{"A", "B", "C"},
+			},
+			wantQuery: "SELECT * FROM users WHERE ids IN (?,?,?)",
+			wantArgs:  []any{"A", "B", "C"},
+		},
+		{
 			name:  "Slice string empty",
 			query: "SELECT * FROM users WHERE ?ids",
 			params: map[string]any{
@@ -151,6 +160,52 @@ WHERE department = ?
 			},
 			wantQuery: "SELECT * FROM users WHERE 1=1",
 			wantArgs:  []any{},
+		},
+		{
+			name:  "Slice any empty",
+			query: "SELECT * FROM users WHERE ?ids",
+			params: map[string]any{
+				"ids": []any{},
+			},
+			wantQuery: "SELECT * FROM users WHERE 1=1",
+			wantArgs:  []any{},
+		},
+		{
+			name:  "Repeated placeholders",
+			query: "SELECT * FROM orders WHERE ?id AND ?id",
+			params: map[string]any{
+				"id": 99,
+			},
+			wantQuery: "SELECT * FROM orders WHERE id = ? AND id = ?",
+			wantArgs:  []any{99, 99},
+		},
+		{
+			name:  "Negative and zero values",
+			query: "SELECT * FROM transactions WHERE ?amount AND ?count",
+			params: map[string]any{
+				"amount": -50,
+				"count":  0,
+			},
+			wantQuery: "SELECT * FROM transactions WHERE amount = ? AND count = ?",
+			wantArgs:  []any{-50, 0},
+		},
+		{
+			name: "Complex nested query",
+			query: `
+SELECT * FROM logs
+WHERE (?user AND (?status OR ?status) AND (?code OR ?extra))
+`,
+			params: map[string]any{
+				"user":   "admin",
+				"status": "active",
+				"code":   "",
+				"extra":  "info",
+			},
+			wantQuery: `
+SELECT * FROM logs
+WHERE (user = ? AND (status = ? OR status = ?) AND (extra = ?))
+`,
+			wantArgs: []any{"admin", "active", "active", "info"},
 		},
 	}
 
